@@ -121,59 +121,94 @@ create= driver.find_elements(By.CLASS_NAME, 'zgT5MfUrDMC54cpiCpZFu')[0].click()
 
 # Now we're on the create page so we wait again for it to load in, it happens to have the same ID as before.
 
-print('1')
+
 
 wait.until(EC.presence_of_element_located((By.ID, 'AppRouter-main-content')))
 
-print('2')
 
-wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'notranslate public-DraftEditor-content')))
-
-print('3')
-
-type = driver.find_element(By.CLASS_NAME, 'notranslate public-DraftEditor-content')
-
-print('4')
-
-type.click()
-
-type.send_keys('pee')
-
-
-
-
-
-
-
-
-
-
-
-
-# Now we need to switch into the iframe that has these buttons, because otherwise our code won't find it.
-# If I'm being perfectly honest, I was here for 20 minutes wondering why I couldn't find the cookies buttons
-# anywhere but hey here we are. Think of iframes as different templates of a drawing that all layer together
-# to make a final image. I should also mention I know nothing about them so that might be a terrible analogy.
 
 # Anyway! We're going to wait until this iframe loads in and then switch to it. If your search for something
 # is returning 0, 'CTRL+F' in the dev console and look for where the iframes are, there's most likely one above
 # the element you're looking for hiding it away from you like some cruel monster.
 
+# Now our code couldn't find the below class on the website: class="notranslate public-DraftEditor-content"
+# I thought we needed to switch into the iframe that has these buttons, because otherwise our code won't find it.
+# If I'm being perfectly honest, I was here for 20 minutes wondering why I couldn't find the cookies buttons
+# anywhere but hey here we are. Think of iframes as different templates of a drawing that all layer together
+# to make a final image. I should also mention I know nothing about them so that might be a terrible analogy.
+# Turns out I was wrong! The class name is not notranslate public-DraftEditor-content but rather two classes
+# notranslate and public-DraftEditor-content. The latter there is only one of so it's a good way to choose
+# this textbox. There's lots of classes that the textbox is contained in (classes that contain other classes)
+# but the role tells us this is the textbox, you can see if you hover over:
+                                                                            
+# <div class="notranslate public-DraftEditor-content" contenteditable="true" role="textbox" spellcheck="true" 
+# style="outline: none; user-select: text; white-space: pre-wrap; overflow-wrap: break-word;"><div 
+# data-contents="true"><div data-offset-key="6285d6_initial-0-0" class="_3LuG0YVLLHE2azRNVaKz7O">
+# <div class="" data-block="true" data-editor="6285d6" data-offset-key="6285d6_initial-0-0">
+# <div data-offset-key="6285d6_initial-0-0" class="public-DraftStyleDefault-block 
+# public-DraftStyleDefault-ltr"><span data-offset-key="6285d6_initial-0-0"><br 
+# data-text="true"></span></div></div></div></div></div>
+
+# The role let me know this is where we're going to put out text.
 
 
-wait.until(EC.frame_to_be_available_and_switch_to_it((By.CLASS_NAME,'_25r3t_lrPF3M6zD2YkWvZU _2qW2MlTCwrBhUAXSCWhbPD')))
 
-print('Here')
+# Make sure our textbox loads in
 
-cookies= driver.find_elements(By.CLASS_NAME, '_1tI68pPnLBjR1iHcL7vsee _2iuoyPiKHN3kfOoeIQalDT _10BQ7pjWbeYP63SAPNS8Ts HNozj_dKjQZ59ZsfEegz8 ')
-
-
-print(len(cookies))
-
-print('adsad')
-cookies[0].click()
+wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'public-DraftEditor-content')))
 
 
-print('Done')
+# Let our driver find it
+type = driver.find_element(By.CLASS_NAME, 'public-DraftEditor-content')
+
+
+# Then let our driver click it and type something in. I've chosen the opening lines to the novel
+# 'Do Androids Dream of Electric Sheep?' more commonly known for the film blade runner. 
+type.click()
+
+type.send_keys('“A merry little surge of electricity piped by automatic alarm from the mood organ beside his bed awakened Rick Deckard.”')
+
+# We can do the same to choose which community we want to post to and the title of the post.
+
+community= driver.find_element(By.CLASS_NAME, '_1MHSX9NVr4C2QxH2dMcg4M')
+
+# We can post to our own reddit by using our username.
+
+self_post='u/'+config.username
+
+community.click()
+
+community.send_keys(self_post)
+
+# And again for the title
+
+
+
+title= driver.find_element(By.CLASS_NAME,'PqYQ3WC15KaceZuKcFI02')
+
+title.click()
+
+title.send_keys('Humble Beginnings')
+
+
+# We've now got an issue. The 'do you want to accept cookies tab' is messing us up
+# as it is covering our post button. We can either scroll down to get past it but I think it's best to just
+# click on accept cookies and move on to the post button. Only annoying thing is the button for post and 
+# the button for accept cookies have the same classes. Thankfully all but one.
+
+cookies=   driver.find_element(By.CLASS_NAME,'_1tI68pPnLBjR1iHcL7vsee')
+
+cookies.click()
+
+# Just making sure we have enough time for our accept cookies part to bugger off
+time.sleep(1.5)
+
+post = driver.find_element(By.CLASS_NAME,'_18Bo5Wuo3tMV-RDB8-kh8Z ')
+
+post.click()
+
+# And we have officially just done our first post to Reddit!
+
+
 
 
